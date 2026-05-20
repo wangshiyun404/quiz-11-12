@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>第11&12讲｜知识闯关 · 知识、大学与发展</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700;900&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#101827;--blue:#1d4ed8;--cyan:#06b6d4;--gold:#f59e0b;--paper:#f8f4ea;--muted:#6b7280;--ok:#10b981;--bad:#ef4444}
+  html,body{font-family:'Noto Sans SC',system-ui,sans-serif;color:var(--ink)}
+  body{background:radial-gradient(circle at top left,#dbeafe,transparent 40%),radial-gradient(circle at bottom right,#fef3c7,transparent 40%),linear-gradient(135deg,#f8fafc 0%,#f8f4ea 46%,#eff6ff 100%);min-height:100vh}
+  h1,h2,h3,.serif{font-family:'Noto Serif SC',serif}
+  .glass{background:rgba(255,255,255,.78);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.85)}
+  .card{box-shadow:12px 12px 0 rgba(29,78,216,.10)}
+  .grain:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.06;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.5"/></svg>')}
+  .btn{transition:all .2s ease;cursor:pointer;user-select:none}
+  .btn:active{transform:scale(.97)}
+  .opt{transition:all .2s ease;cursor:pointer;border:2px solid rgba(16,24,39,.10)}
+  .opt:hover{border-color:#1d4ed8;background:rgba(29,78,216,.04);transform:translateY(-1px)}
+  .opt.selected{border-color:#1d4ed8;background:rgba(29,78,216,.10)}
+  .opt.correct{border-color:var(--ok);background:rgba(16,185,129,.12);animation:pulse-ok .5s}
+  .opt.wrong{border-color:var(--bad);background:rgba(239,68,68,.12);animation:shake .4s}
+  .opt.locked{cursor:default;pointer-events:none}
+  @keyframes pulse-ok{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  @keyframes float-up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+  .float-in{animation:float-up .5s ease}
+  .progress-bar{height:8px;background:rgba(16,24,39,.08);border-radius:99px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,#1d4ed8,#06b6d4);transition:width .5s ease;border-radius:99px}
+  .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:700}
+  .badge-l11{background:#dbeafe;color:#1e40af}
+  .badge-l12{background:#fef3c7;color:#92400e}
+  .badge-mix{background:#ede9fe;color:#5b21b6}
+  .match-item{padding:14px 18px;border-radius:14px;border:2px solid rgba(16,24,39,.10);background:white;cursor:pointer;transition:all .2s ease;user-select:none}
+  .match-item:hover{border-color:#1d4ed8;transform:translateY(-1px)}
+  .match-item.picked-left{border-color:#06b6d4;background:#ecfeff}
+  .match-item.picked-right{border-color:#f59e0b;background:#fef3c7}
+  .match-item.matched{opacity:.5;cursor:default;border-color:var(--ok);background:rgba(16,185,129,.08)}
+  .match-item.match-wrong{animation:shake .4s;border-color:var(--bad);background:rgba(239,68,68,.08)}
+  .order-item{padding:14px 18px;border-radius:14px;border:2px solid rgba(16,24,39,.10);background:white;cursor:grab;transition:all .2s ease;user-select:none;display:flex;align-items:center;gap:12px}
+  .order-item:hover{border-color:#1d4ed8}
+  .order-item.dragging{opacity:.5;cursor:grabbing}
+  .order-num{flex-shrink:0;width:28px;height:28px;border-radius:99px;background:#1d4ed8;color:white;display:grid;place-items:center;font-weight:700;font-size:13px}
+  .feedback{padding:16px 18px;border-radius:16px;margin-top:16px;animation:float-up .35s ease}
+  .feedback.ok{background:rgba(16,185,129,.10);border:1px solid rgba(16,185,129,.30);color:#065f46}
+  .feedback.bad{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:#7f1d1d}
+  .streak-pop{position:fixed;top:30%;left:50%;transform:translateX(-50%);font-size:48px;font-weight:900;color:#f59e0b;text-shadow:0 4px 0 rgba(245,158,11,.2);pointer-events:none;animation:streak-anim 1.2s ease forwards;z-index:100}
+  @keyframes streak-anim{0%{opacity:0;transform:translateX(-50%) scale(.5)}30%{opacity:1;transform:translateX(-50%) scale(1.1)}100%{opacity:0;transform:translateX(-50%) scale(1) translateY(-60px)}}
+  .hidden{display:none !important}
+</style>
+</head>
+<body class="grain">
+<div class="max-w-4xl mx-auto px-4 py-6 md:py-10">
+
+  <!-- 顶部标识 -->
+  <header class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-2xl bg-blue-700 text-white grid place-items-center font-black serif">Q</div>
+      <div>
+        <div class="font-black">知识、大学与发展</div>
+        <div class="text-xs text-slate-500">第11&amp;12讲 · 知识闯关</div>
+      </div>
+    </div>
+    <button id="restartTop" class="hidden text-sm text-slate-500 hover:text-blue-700 btn">↻ 重新开始</button>
+  </header>
+
+  <!-- ============== 开始页 ============== -->
+  <section id="screen-intro" class="glass rounded-3xl p-8 md:p-12 card float-in">
+    <p class="text-blue-700 font-black text-sm tracking-widest">QUIZ · 课后闯关</p>
+    <h1 class="text-4xl md:text-6xl font-black mt-3 leading-tight">两讲知识闯关<br/><span class="text-blue-700">15题 · 5种题型</span></h1>
+    <p class="mt-5 text-lg text-slate-700 leading-relaxed max-w-2xl">
+      把<b>第11讲《全球化与信息化时代的大学》</b>和<b>第12讲《中国大学发展的反思与前瞻》</b>的关键知识点变成一场轻量闯关。
+      <br/>选择题、判断题、多选题、匹配题、排序题穿插出现，答完即时反馈，最后给你一个称号。
+    </p>
+
+    <div class="grid sm:grid-cols-3 gap-4 mt-8">
+      <div class="rounded-2xl p-5 bg-white/70 border border-slate-200">
+        <div class="text-3xl">⏱️</div>
+        <b class="block mt-2">5—8 分钟</b>
+        <p class="text-sm text-slate-600 mt-1">不计时，轻松答即可</p>
+      </div>
+      <div class="rounded-2xl p-5 bg-white/70 border border-slate-200">
+        <div class="text-3xl">🔥</div>
+        <b class="block mt-2">连击加分</b>
+        <p class="text-sm text-slate-600 mt-1">连续答对会触发连击奖励</p>
+      </div>
+      <div class="rounded-2xl p-5 bg-white/70 border border-slate-200">
+        <div class="text-3xl">🏅</div>
+        <b class="block mt-2">最后授勋</b>
+        <p class="text-sm text-slate-600 mt-1">根据成绩生成专属称号</p>
+      </div>
+    </div>
+
+    <button id="startBtn" class="mt-10 btn inline-flex items-center gap-2 px-8 py-4 rounded-full bg-slate-900 hover:bg-blue-700 text-white text-lg font-black shadow-lg">
+      开始闯关 →
+    </button>
+    <p class="mt-4 text-xs text-slate-500">建议：先把第11讲、第12讲的网页过一遍再来；过程中遇到不会的，可结合课件回顾。</p>
+  </section>
+
+  <!-- ============== 问题页 ============== -->
+  <section id="screen-quiz" class="hidden">
+    <!-- HUD -->
+    <div class="glass rounded-2xl p-4 mb-4 flex items-center gap-4">
+      <div class="flex-1">
+        <div class="flex justify-between text-xs text-slate-500 mb-2">
+          <span>进度 <b id="hudIdx" class="text-blue-700">1</b> / <span id="hudTotal">15</span></span>
+          <span>得分 <b id="hudScore" class="text-blue-700">0</b></span>
+        </div>
+        <div class="progress-bar"><div id="progressFill" class="progress-fill" style="width:0%"></div></div>
+      </div>
+      <div class="text-center">
+        <div class="text-xs text-slate-500">连击</div>
+        <div class="text-2xl font-black text-amber-500" id="hudStreak">0</div>
+      </div>
+    </div>
+
+    <!-- 题目卡片 -->
+    <div id="questionCard" class="glass rounded-3xl p-6 md:p-10 card"></div>
+
+    <div class="flex justify-end gap-3 mt-5">
+      <button id="submitBtn" class="btn px-7 py-3 rounded-full bg-slate-900 hover:bg-blue-700 text-white font-black disabled:opacity-40 disabled:cursor-not-allowed" disabled>提交</button>
+      <button id="nextBtn" class="btn px-7 py-3 rounded-full bg-blue-700 hover:bg-blue-800 text-white font-black hidden">下一题 →</button>
+    </div>
+  </section>
+
+  <!-- ============== 结果页 ============== -->
+  <section id="screen-result" class="hidden glass rounded-3xl p-8 md:p-14 card">
+    <p class="text-blue-700 font-black tracking-widest text-sm">RESULT · 你的成绩</p>
+    <h2 id="resultTitle" class="text-4xl md:text-6xl font-black mt-3"></h2>
+    <p id="resultSubtitle" class="text-xl text-slate-700 mt-2"></p>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
+      <div class="rounded-2xl p-5 bg-white/70 border border-slate-200 text-center">
+        <div class="text-xs text-slate-500">总得分</div>
+        <div id="resScore" class="text-3xl font-black text-blue-700 mt-1">0</div>
+      </div>
+      <div class="rounded-2xl p-5 bg-white/70 border border-slate-200 text-center">
+        <div class="text-xs text-slate-500">正确率</div>
+        <div id="resAcc" class="text-3xl font-black text-emerald-600 mt-1">0%</div>
+      </div>
+      <div class="rounded-2xl p-5 bg-white/70 border border-slate-200 text-center">
+        <div class="text-xs text-slate-500">最高连击</div>
+        <div id="resStreak" class="text-3xl font-black text-amber-500 mt-1">0</div>
+      </div>
+      <div class="rounded-2xl p-5 bg-white/70 border border-slate-200 text-center">
+        <div class="text-xs text-slate-500">用时</div>
+        <div id="resTime" class="text-3xl font-black text-slate-700 mt-1">—</div>
+      </div>
+    </div>
+
+    <div class="mt-8 rounded-2xl p-5 bg-blue-50/70 border border-blue-200">
+      <b class="text-blue-900">📝 错题回看 / 知识点回顾</b>
+      <ul id="resReview" class="mt-3 space-y-2 text-sm text-slate-700"></ul>
+    </div>
+
+    <div class="mt-8 flex flex-wrap gap-3">
+      <button id="restartBtn" class="btn px-7 py-3 rounded-full bg-slate-900 hover:bg-blue-700 text-white font-black">↻ 再玩一次</button>
+      <a href="https://wangshiyun404.github.io/lecture-11/slides.html" target="_blank" class="btn px-5 py-3 rounded-full bg-white border border-slate-300 hover:border-blue-700 hover:text-blue-700 text-slate-700">回看第11讲 ↗</a>
+      <a href="https://wangshiyun404.github.io/lecture-12/slides.html" target="_blank" class="btn px-5 py-3 rounded-full bg-white border border-slate-300 hover:border-blue-700 hover:text-blue-700 text-slate-700">回看第12讲 ↗</a>
+    </div>
+  </section>
+
+  <footer class="text-center text-xs text-slate-400 mt-12 pb-6">
+    © 课程闯关网页｜《知识、大学与发展》第11&12讲·课后小测
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   题库：包含 5 种题型
+   type:
+     - "single"  单选题
+     - "multi"   多选题（多答案）
+     - "tf"      判断题
+     - "match"   匹配题：左右两列点选配对
+     - "order"   排序题：把项目按正确顺序排
+   ============================================================ */
+const QUESTIONS = [
+  // ---------- 第11讲 ----------
+  {
+    lec:"L11", type:"single",
+    q:"第11讲提出，理解全球化与信息化时代大学的三条主线是什么？",
+    options:[
+      "流动 · 平台 · 智能",
+      "扩招 · 评估 · 排名",
+      "国际化 · 产业化 · 数字化",
+      "教学 · 科研 · 服务"
+    ],
+    answer:0,
+    explain:"三条主线对应：全球流动（人员/资本/声誉跨国）、平台大学（MOOC/在线学位/微证书）、智能治理（生成式AI对教学与评价的冲击）。"
+  },
+  {
+    lec:"L11", type:"multi",
+    q:"课程图表「大学数字转型的四类风险」里列出了哪些风险？（多选）",
+    options:[
+      "数字鸿沟",
+      "学术诚信",
+      "隐私与监控",
+      "平台依赖",
+      "认知外包",
+      "实验室经费下降"
+    ],
+    answer:[0,1,2,3,4],
+    explain:"雷达图标签：数字鸿沟、学术诚信、隐私与监控、平台依赖、认知外包；「实验室经费下降」不在其中。"
+  },
+  {
+    lec:"L11", type:"tf",
+    q:"MOOC 已经在事实上替代了大学的课程体系。",
+    answer:false,
+    explain:"课文明确说「MOOC并没有终结大学，但改变了课程的边界」——线下、线上、平台是协同的。"
+  },
+  {
+    lec:"L11", type:"single",
+    q:"学生用 AI 生成论文初稿，并自行核查引用——按课程的「情境判断器」最接近的处置是？",
+    options:[
+      "原则上不允许，要求重做",
+      "可条件允许，过程透明",
+      "完全不限制，鼓励自由发挥",
+      "改为口头答辩替代"
+    ],
+    answer:1,
+    explain:"AI Assessment Scale 思路：标明 AI 参与环节、保留提示词与修改记录、核查事实与引用，可条件允许。"
+  },
+  {
+    lec:"L11", type:"single",
+    q:"UNESCO 在 2023 年发布的全球教育监测报告（GEM Report 2023）主题是？",
+    options:[
+      "性别平等",
+      "技术与教育",
+      "气候变化",
+      "教师教育"
+    ],
+    answer:1,
+    explain:"GEM Report 2023 主题为「Technology in education」，强调技术既能解决教育问题，也可能制造新风险。"
+  },
+  {
+    lec:"L11", type:"single",
+    q:"CSU（California State University）与 OpenAI 在 2025 年 2 月达成的合作意味着大学态度的什么转变？",
+    options:[
+      "从禁用转向制度化接入 AI 工具",
+      "从开放转向封闭",
+      "从科研转向教学",
+      "从在线转向线下"
+    ],
+    answer:0,
+    explain:"案例展示大学已从「防作弊」阶段，迈向「全校规模化接入 ChatGPT Edu」的制度化使用阶段。"
+  },
+  {
+    lec:"L11", type:"order",
+    q:"国际化的三层结构由浅到深排序：",
+    items:["人员流动","课程流动","知识标准流动"],
+    answer:[0,1,2],
+    explain:"留学生/教师跨国是最直观的「人员流动」；其后是课程国际化（联合学位、英文授课、跨境校区）；最深一层是「谁定义评价标准/学科范式」的知识标准流动。"
+  },
+  // ---------- 第12讲 ----------
+  {
+    lec:"L12", type:"single",
+    q:"从 2012 年到 2024 年，中国高等教育毛入学率从 30% 上升到？",
+    options:["48.1%","57.8%","60.8%","68.5%"],
+    answer:2,
+    explain:"2024年毛入学率 60.8%（2023年是 60.2%），意味着中国已进入「普及化平台期」。"
+  },
+  {
+    lec:"L12", type:"multi",
+    q:"第12讲建议用哪四个关键词贯穿全课？（多选）",
+    options:[
+      "普及化",
+      "分层化",
+      "战略化",
+      "智能化",
+      "市场化",
+      "国际化"
+    ],
+    answer:[0,1,2,3],
+    explain:"四关键词：普及化（覆盖更广社会群体）、分层化（机会扩大≠结构公平）、战略化（嵌入国家创新与产业逻辑）、智能化（AI+教育是面向未来的切口）。"
+  },
+  {
+    lec:"L12", type:"match",
+    q:"把下列数字配到 2024 年的相应指标上：",
+    left:["4846 万","1222 万","409.54 万","2753.3 亿"],
+    right:["高等教育总规模","2025届高校毕业生预计","在学研究生规模","2023高校 R&D 经费"],
+    answer:[0,1,2,3], // left[i] -> right[answer[i]]
+    explain:"四组数字易混：4846万是总规模、1222万是2025届毕业生预计、409.54万是在学研究生、2753.3亿是2023年高校R&D经费。"
+  },
+  {
+    lec:"L12", type:"tf",
+    q:"2024 年全国本科专业调整中：新增 1839 个、撤销 1428 个、停招 2220 个。",
+    answer:true,
+    explain:"这是 2024 调整结果（2025 公布）。结构性「越调越优」是本节课要讨论的重点。"
+  },
+  {
+    lec:"L12", type:"single",
+    q:"《教育强国建设规划纲要》覆盖的时间段是？",
+    options:[
+      "2020—2030 年",
+      "2024—2035 年",
+      "2025—2050 年",
+      "2023—2027 年"
+    ],
+    answer:1,
+    explain:"《教育强国建设规划纲要（2024—2035年）》是本课最重要的前瞻性总文件，2035 是本国建成教育强国的目标节点。"
+  },
+  {
+    lec:"L12", type:"single",
+    q:"《「人工智能+教育」行动计划》提出「基本形成人工智能与教育深度融合的发展格局」的目标年是？",
+    options:["2027","2030","2035","2049"],
+    answer:1,
+    explain:"目标年是 2030；高等教育阶段强调学科交叉、教育教学创新与研究场景重塑。"
+  },
+  {
+    lec:"L12", type:"single",
+    q:"「破五唯」最直接对应下面哪份政策？",
+    options:[
+      "《教育强国建设规划纲要》",
+      "《深化新时代教育评价改革总体方案》",
+      "《「人工智能+教育」行动计划》",
+      "《统筹推进世界一流大学和一流学科建设总体方案》"
+    ],
+    answer:1,
+    explain:"「破五唯」（唯分数、唯升学、唯文凭、唯论文、唯帽子）来自《深化新时代教育评价改革总体方案》。"
+  },
+  // ---------- 综合 ----------
+  {
+    lec:"MIX", type:"single",
+    q:"把两讲合在一起看，最贴近老师在第12讲收尾「好大学不只『强』，还要『真、稳、厚、活』」的判断是？",
+    options:[
+      "中国大学应全面对标世界排名靠前的研究型大学",
+      "中国大学要在普及化与多样性之间寻找平衡，避免单一同质化",
+      "中国大学的关键是继续扩大规模",
+      "中国大学应回归象牙塔，减少社会服务"
+    ],
+    answer:1,
+    explain:"第11讲提示「全球化是否=西方化」「平台逻辑下的同质化」；第12讲在反思之一就点出「为什么所有学校都想像研究型大学」。两讲合在一起强调：分类、多样、有判断力的大学比单一「更强」更重要。"
+  }
+];
+
+/* ===================== 状态 ===================== */
+const state = {
+  idx:0, score:0, streak:0, maxStreak:0,
+  startTs:0, answers:[], picked:null, locked:false,
+  // for match
+  matchSelectedLeft:null, matchSelectedRight:null, matchPairs:[], matchAttempts:0,
+  // for order
+  orderArr:[]
+};
+
+/* ===================== DOM ===================== */
+const $ = id=>document.getElementById(id);
+const screens = {intro:$('screen-intro'), quiz:$('screen-quiz'), result:$('screen-result')};
+function show(name){
+  Object.entries(screens).forEach(([k,el])=>el.classList.toggle('hidden', k!==name));
+  $('restartTop').classList.toggle('hidden', name==='intro');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ===================== 启动 ===================== */
+$('startBtn').onclick = ()=>{ resetGame(); show('quiz'); render(); };
+$('restartBtn').onclick = ()=>{ resetGame(); show('quiz'); render(); };
+$('restartTop').onclick = ()=>{ if(confirm('确定要重新开始吗？当前进度会清空。')){ resetGame(); show('intro'); } };
+
+function resetGame(){
+  state.idx=0; state.score=0; state.streak=0; state.maxStreak=0;
+  state.startTs=Date.now(); state.answers=[];
+  state.picked=null; state.locked=false;
+  state.matchSelectedLeft=null; state.matchSelectedRight=null; state.matchPairs=[]; state.matchAttempts=0;
+  state.orderArr=[];
+}
+
+/* ===================== 渲染主调度 ===================== */
+function render(){
+  const total = QUESTIONS.length;
+  $('hudIdx').textContent = state.idx+1;
+  $('hudTotal').textContent = total;
+  $('hudScore').textContent = state.score;
+  $('hudStreak').textContent = state.streak;
+  $('progressFill').style.width = ((state.idx)/total*100)+'%';
+
+  const q = QUESTIONS[state.idx];
+  const card = $('questionCard');
+  card.classList.remove('float-in'); void card.offsetWidth; card.classList.add('float-in');
+
+  state.picked = null; state.locked = false;
+  state.matchSelectedLeft=null; state.matchSelectedRight=null; state.matchPairs=[]; state.matchAttempts=0;
+  $('submitBtn').classList.remove('hidden'); $('submitBtn').disabled = true;
+  $('nextBtn').classList.add('hidden');
+
+  const badge = q.lec==='L11' ? '<span class="badge badge-l11">第11讲</span>' :
+                q.lec==='L12' ? '<span class="badge badge-l12">第12讲</span>' :
+                '<span class="badge badge-mix">综合</span>';
+  const typeLabel = {single:'单选',multi:'多选',tf:'判断',match:'匹配',order:'排序'}[q.type];
+
+  let body = '';
+  if(q.type==='single' || q.type==='multi'){
+    body = q.options.map((opt,i)=>`
+      <div class="opt rounded-2xl p-4 md:p-5 flex items-start gap-3" data-i="${i}">
+        <div class="flex-shrink-0 w-7 h-7 rounded-full bg-slate-100 grid place-items-center font-bold text-sm">${String.fromCharCode(65+i)}</div>
+        <div class="flex-1 leading-relaxed">${opt}</div>
+      </div>`).join('');
+    body = `<div class="space-y-3">${body}</div>`;
+    if(q.type==='multi') body = `<p class="text-sm text-amber-700 mb-3">⚠️ 多选题：选齐所有正确选项才算对</p>${body}`;
+  }
+  else if(q.type==='tf'){
+    body = `
+      <div class="grid sm:grid-cols-2 gap-3">
+        <div class="opt rounded-2xl p-6 text-center" data-i="1"><div class="text-4xl mb-2">✓</div><b class="text-lg">正确</b></div>
+        <div class="opt rounded-2xl p-6 text-center" data-i="0"><div class="text-4xl mb-2">✗</div><b class="text-lg">错误</b></div>
+      </div>`;
+  }
+  else if(q.type==='match'){
+    // 打乱右列
+    const order = shuffleIdx(q.right.length);
+    state._matchRightOrder = order;
+    body = `
+      <p class="text-sm text-slate-500 mb-4">先点左列一项，再点右列一项进行配对。配对正确会变绿；错了可以重选。</p>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="space-y-2" id="matchLeft">
+          ${q.left.map((t,i)=>`<div class="match-item" data-side="L" data-i="${i}">${t}</div>`).join('')}
+        </div>
+        <div class="space-y-2" id="matchRight">
+          ${order.map(i=>`<div class="match-item" data-side="R" data-i="${i}">${q.right[i]}</div>`).join('')}
+        </div>
+      </div>`;
+  }
+  else if(q.type==='order'){
+    state.orderArr = shuffleIdx(q.items.length);
+    body = `
+      <p class="text-sm text-slate-500 mb-4">点击上下箭头调整顺序。</p>
+      <div id="orderList" class="space-y-2"></div>`;
+  }
+
+  card.innerHTML = `
+    <div class="flex items-center gap-2 mb-4">${badge}<span class="text-xs text-slate-500">${typeLabel}</span></div>
+    <h2 class="text-xl md:text-2xl font-black leading-snug serif">${q.q}</h2>
+    <div class="mt-6" id="qBody">${body}</div>
+    <div id="feedback"></div>
+  `;
+
+  // 绑定交互
+  if(q.type==='single' || q.type==='tf'){
+    card.querySelectorAll('.opt').forEach(el=>{
+      el.onclick = ()=>{
+        if(state.locked) return;
+        card.querySelectorAll('.opt').forEach(x=>x.classList.remove('selected'));
+        el.classList.add('selected');
+        state.picked = parseInt(el.dataset.i,10);
+        $('submitBtn').disabled = false;
+      };
+    });
+  } else if(q.type==='multi'){
+    state.picked = [];
+    card.querySelectorAll('.opt').forEach(el=>{
+      el.onclick = ()=>{
+        if(state.locked) return;
+        const i = parseInt(el.dataset.i,10);
+        if(state.picked.includes(i)){
+          state.picked = state.picked.filter(x=>x!==i);
+          el.classList.remove('selected');
+        } else {
+          state.picked.push(i);
+          el.classList.add('selected');
+        }
+        $('submitBtn').disabled = state.picked.length===0;
+      };
+    });
+  } else if(q.type==='match'){
+    bindMatch(q);
+  } else if(q.type==='order'){
+    renderOrder(q);
+  }
+}
+
+/* ===================== 匹配题 ===================== */
+function bindMatch(q){
+  const card = $('questionCard');
+  card.querySelectorAll('.match-item').forEach(el=>{
+    el.onclick = ()=>{
+      if(state.locked) return;
+      if(el.classList.contains('matched')) return;
+      const side = el.dataset.side, i = parseInt(el.dataset.i,10);
+      if(side==='L'){
+        card.querySelectorAll('.match-item[data-side="L"]').forEach(x=>{ if(!x.classList.contains('matched')) x.classList.remove('picked-left'); });
+        el.classList.add('picked-left');
+        state.matchSelectedLeft = i;
+      } else {
+        card.querySelectorAll('.match-item[data-side="R"]').forEach(x=>{ if(!x.classList.contains('matched')) x.classList.remove('picked-right'); });
+        el.classList.add('picked-right');
+        state.matchSelectedRight = i;
+      }
+      if(state.matchSelectedLeft!==null && state.matchSelectedRight!==null){
+        state.matchAttempts++;
+        const correctRightIdx = q.answer[state.matchSelectedLeft];
+        if(correctRightIdx === state.matchSelectedRight){
+          // 配对成功
+          state.matchPairs.push([state.matchSelectedLeft, state.matchSelectedRight]);
+          card.querySelectorAll(`.match-item[data-side="L"][data-i="${state.matchSelectedLeft}"]`).forEach(x=>{x.classList.add('matched');x.classList.remove('picked-left')});
+          card.querySelectorAll(`.match-item[data-side="R"][data-i="${state.matchSelectedRight}"]`).forEach(x=>{x.classList.add('matched');x.classList.remove('picked-right')});
+          state.matchSelectedLeft = null; state.matchSelectedRight = null;
+          if(state.matchPairs.length === q.left.length){
+            $('submitBtn').disabled = false;
+            $('submitBtn').click(); // 自动提交
+          }
+        } else {
+          // 错误
+          const wrongL = card.querySelector(`.match-item[data-side="L"][data-i="${state.matchSelectedLeft}"]`);
+          const wrongR = card.querySelector(`.match-item[data-side="R"][data-i="${state.matchSelectedRight}"]`);
+          [wrongL,wrongR].forEach(x=>{x.classList.add('match-wrong')});
+          setTimeout(()=>{[wrongL,wrongR].forEach(x=>{x.classList.remove('match-wrong','picked-left','picked-right')});},500);
+          state.matchSelectedLeft = null; state.matchSelectedRight = null;
+        }
+      }
+    };
+  });
+}
+
+/* ===================== 排序题 ===================== */
+function renderOrder(q){
+  const list = $('orderList');
+  list.innerHTML = state.orderArr.map((origIdx,pos)=>`
+    <div class="order-item" data-pos="${pos}">
+      <div class="order-num">${pos+1}</div>
+      <div class="flex-1">${q.items[origIdx]}</div>
+      <div class="flex gap-1">
+        <button class="btn px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200" data-act="up" ${pos===0?'disabled':''}>↑</button>
+        <button class="btn px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200" data-act="down" ${pos===state.orderArr.length-1?'disabled':''}>↓</button>
+      </div>
+    </div>`).join('');
+  list.querySelectorAll('button[data-act]').forEach(btn=>{
+    btn.onclick = (e)=>{
+      if(state.locked) return;
+      const item = e.target.closest('.order-item');
+      const pos = parseInt(item.dataset.pos,10);
+      const act = btn.dataset.act;
+      if(act==='up' && pos>0){ [state.orderArr[pos-1], state.orderArr[pos]] = [state.orderArr[pos], state.orderArr[pos-1]]; }
+      if(act==='down' && pos<state.orderArr.length-1){ [state.orderArr[pos+1], state.orderArr[pos]] = [state.orderArr[pos], state.orderArr[pos+1]]; }
+      renderOrder(q);
+    };
+  });
+  $('submitBtn').disabled = false;
+}
+
+/* ===================== 提交与判分 ===================== */
+$('submitBtn').onclick = ()=>{
+  if(state.locked) return;
+  const q = QUESTIONS[state.idx];
+  let correct = false;
+  if(q.type==='single' || q.type==='tf'){
+    const right = q.type==='tf' ? (q.answer?1:0) : q.answer;
+    correct = state.picked === right;
+    markChoiceFeedback(q, right);
+  } else if(q.type==='multi'){
+    const set1 = new Set(state.picked), set2 = new Set(q.answer);
+    correct = set1.size===set2.size && [...set1].every(x=>set2.has(x));
+    markChoiceFeedback(q, q.answer);
+  } else if(q.type==='match'){
+    // 这里的 correct 由"未发生错误次数" 来判定
+    correct = state.matchAttempts === q.left.length; // 一次到位
+  } else if(q.type==='order'){
+    correct = state.orderArr.every((v,i)=>v===q.answer[i]);
+    markOrderFeedback(q, correct);
+  }
+  state.locked = true;
+  // 得分
+  let pts = 0;
+  if(correct){
+    pts = 10;
+    state.streak++;
+    if(state.streak>=3){ pts += 5; popStreak(`🔥 ${state.streak}连击 +5`); }
+    state.maxStreak = Math.max(state.maxStreak, state.streak);
+    confetti({particleCount:60, spread:60, origin:{y:.6}, scalar:.8});
+  } else {
+    state.streak = 0;
+  }
+  state.score += pts;
+  state.answers.push({idx:state.idx, lec:q.lec, correct, q:q.q, explain:q.explain});
+
+  // feedback
+  const fb = $('feedback');
+  fb.innerHTML = `
+    <div class="feedback ${correct?'ok':'bad'}">
+      <b>${correct?'✓ 答对了':'✗ 不太对'}</b>
+      <p class="mt-1 text-sm leading-relaxed">${q.explain}</p>
+    </div>`;
+  $('hudScore').textContent = state.score;
+  $('hudStreak').textContent = state.streak;
+  $('submitBtn').classList.add('hidden');
+  $('nextBtn').classList.remove('hidden');
+};
+
+function markChoiceFeedback(q, rightAns){
+  const card = $('questionCard');
+  card.querySelectorAll('.opt').forEach(el=>{
+    const i = parseInt(el.dataset.i,10);
+    el.classList.add('locked');
+    if(Array.isArray(rightAns)){
+      if(rightAns.includes(i)) el.classList.add('correct');
+      else if(el.classList.contains('selected')) el.classList.add('wrong');
+    } else {
+      if(i===rightAns) el.classList.add('correct');
+      else if(el.classList.contains('selected')) el.classList.add('wrong');
+    }
+  });
+}
+function markOrderFeedback(q, correct){
+  // 简单：把每一项染色（看顺序是否对应到 answer）
+  const list = document.querySelectorAll('#orderList .order-item');
+  list.forEach((el,pos)=>{
+    const isRight = state.orderArr[pos] === q.answer[pos];
+    el.style.borderColor = isRight ? 'var(--ok)' : 'var(--bad)';
+    el.style.background = isRight ? 'rgba(16,185,129,.08)' : 'rgba(239,68,68,.06)';
+    el.querySelectorAll('button').forEach(b=>b.disabled=true);
+  });
+}
+
+/* ===================== 下一题 ===================== */
+$('nextBtn').onclick = ()=>{
+  state.idx++;
+  if(state.idx >= QUESTIONS.length){
+    showResult();
+  } else {
+    render();
+  }
+};
+
+/* ===================== 结果页 ===================== */
+function showResult(){
+  show('result');
+  const total = QUESTIONS.length;
+  const right = state.answers.filter(a=>a.correct).length;
+  const acc = Math.round(right/total*100);
+  const sec = Math.round((Date.now()-state.startTs)/1000);
+  const mm = String(Math.floor(sec/60)).padStart(2,'0'), ss = String(sec%60).padStart(2,'0');
+
+  let title, sub;
+  if(acc>=90){ title='🏆 高教研究小达人'; sub='对两讲核心知识点掌握扎实，建议带头组织一次小组讨论。'; }
+  else if(acc>=75){ title='🎓 课堂观察员'; sub='主要概念都抓住了，少量细节再回顾一下就更稳。'; }
+  else if(acc>=60){ title='📝 在学习的路上'; sub='整体框架已建立，建议回看错题对应的章节再练一次。'; }
+  else if(acc>=40){ title='📚 需要再读课件'; sub='重点回顾「四关键词」「数字大学风险」与关键数据。'; }
+  else { title='✏️ 从头来过'; sub='不要紧，先把第11讲、第12讲的网页完整过一遍再回来。'; }
+
+  $('resultTitle').textContent = title;
+  $('resultSubtitle').textContent = sub;
+  $('resScore').textContent = state.score;
+  $('resAcc').textContent = acc+'%';
+  $('resStreak').textContent = state.maxStreak;
+  $('resTime').textContent = `${mm}:${ss}`;
+
+  // 错题回看 / 全对则给亮点
+  const wrong = state.answers.filter(a=>!a.correct);
+  const list = $('resReview');
+  if(wrong.length===0){
+    list.innerHTML = `<li>🎉 全部答对！可以挑战一下把课程的关键数据讲给别人听。</li>`;
+  } else {
+    list.innerHTML = wrong.map(a=>`<li><b>[${a.lec==='L11'?'第11讲':a.lec==='L12'?'第12讲':'综合'}]</b> ${a.q}<br/><span class="text-slate-500">→ ${a.explain}</span></li>`).join('');
+  }
+  if(acc>=75){ setTimeout(()=>confetti({particleCount:120, spread:90, origin:{y:.4}}),300); }
+}
+
+/* ===================== 工具 ===================== */
+function shuffleIdx(n){
+  const a = Array.from({length:n},(_,i)=>i);
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function popStreak(text){
+  const el = document.createElement('div');
+  el.className = 'streak-pop'; el.textContent = text;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 1200);
+}
+</script>
+</body>
+</html>
